@@ -46,7 +46,7 @@ module "acm" {
     aws = aws.useast1
   }
   zone_id     = aws_route53_zone.this.id
-  domain_name = "example.com"
+  domain_name = "*.example.com"
 }
 
 # Main cloudfront distribution with S3 origin
