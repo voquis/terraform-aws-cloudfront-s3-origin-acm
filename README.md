@@ -52,7 +52,7 @@ module "acm" {
 # Main cloudfront distribution with S3 origin
 module "cloudfront" {
   source                      = "voquis/cloudfront-s3-origin-acm/aws"
-  version                     = "0.0.2"
+  version                     = "0.0.3"
   bucket_id                   = module.s3.s3_bucket.id
   bucket_arn                  = module.s3.s3_bucket.arn
   bucket_regional_domain_name = module.s3.s3_bucket.bucket_regional_domain_name

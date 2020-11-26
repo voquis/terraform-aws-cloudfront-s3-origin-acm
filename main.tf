@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "this" {
 
   statement {
     actions   = ["s3:ListBucket"]
-    resources = ["${var.bucket_arn}"]
+    resources = [var.bucket_arn]
 
     principals {
       type = "AWS"
