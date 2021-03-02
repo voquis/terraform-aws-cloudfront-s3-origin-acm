@@ -13,6 +13,7 @@ resource "aws_cloudfront_origin_access_identity" "this" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_s3_bucket_policy" "this" {
+  count  = var.enable_bucket_policy == true ? 1 : 0
   bucket = var.bucket_id
   policy = data.aws_iam_policy_document.this.json
 }
