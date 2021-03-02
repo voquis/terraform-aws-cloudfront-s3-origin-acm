@@ -50,6 +50,12 @@ variable "enabled" {
   default     = true
 }
 
+variable "enable_bucket_policy" {
+  description = "Whether the bucket policy shall be managed or not"
+  type        = bool
+  default     = true
+}
+
 variable "price_class" {
   description = "Price Class"
   type        = string
