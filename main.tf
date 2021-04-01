@@ -187,20 +187,15 @@ resource "aws_cloudfront_distribution" "this" {
       max_ttl     = try(ordered_cache_behavior.value.max_ttl, var.max_ttl)
       compress    = try(ordered_cache_behavior.value.compress, var.compress)
 
+      forwarded_values {
+        query_string = var.forwarded_values_query_string
+
+        cookies {
+          forward = var.forwarded_values_cookies
+        }
+      }
+
       # NOTE: Depends on the optional variable
-      # dynamic "forwarded_values" {
-      #   for_each = ordered_cache_behavior.value.forwarded_values
-
-      #   content {
-      #     query_string = forwarded_values.value.query_string
-      #     headers      = forwarded_values.value.forward_header_values
-
-      #     cookies {
-      #       forward = forwarded_values.value.forward_cookies
-      #     }
-      #   }
-      # }
-
       # dynamic "lambda_function_association" {
       #   for_each = ordered_cache_behavior.value.lambda_function_association
 
