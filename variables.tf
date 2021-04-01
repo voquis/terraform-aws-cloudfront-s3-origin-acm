@@ -142,6 +142,48 @@ variable "forwarded_values_cookies" {
   default     = "none"
 }
 
+# Ordered cache variables
+variable "ordered_cache_behaviors" {
+  description = <<EOF
+An ordered list of cache behaviors resource for this distribution. List from top
+to bottom in order of precedence. Array element's index is used to define the
+precedence.
+EOF
+
+  type = list(
+    object({
+      target_origin_id = string
+      path_pattern     = string
+
+      # TODO: Optional will be available in TF 0.15
+      # allowed_methods = optional(list(string))
+      # cached_methods  = optional(list(string))
+      # compress        = optional(bool)
+
+      # viewer_protocol_policy = optional(string)
+      # min_ttl                = optional(number)
+      # default_ttl            = optional(number)
+      # max_ttl                = optional(number)
+
+      # forward_query_string  = optional(bool)
+      # forward_header_values = optional(list(string))
+      # forward_cookies       = optional(string)
+
+      # lambda_function_association = optional(
+      #   list(
+      #     object({
+      #       event_type   = string
+      #       include_body = bool
+      #       lambda_arn   = string
+      #     })
+      #   )
+      # )
+    })
+  )
+
+  default = []
+}
+
 # Origin variables
 variable "origin_path" {
   description = "The parent path within the S3 bucket from which to serve content.  Do not use /, this is implied.  Useful for updating the distribution with a new version by using directories for versioning instead of invalidation requests"
@@ -149,11 +191,64 @@ variable "origin_path" {
   default     = null
 }
 
+variable "custom_origins" {
+  description = <<EOF
+  Array of custom origins to append to this CloudFront distribution.
+  Further info available at Terraform doc
+  Ref: https://www.terraform.io/docs/providers/aws/r/cloudfront_distribution.html#origin-arguments
+EOF
+
+  type = list(
+    object({
+      domain_name = string
+      origin_id   = string
+
+      # TODO: Optional attributes are going to be release in TF 0.15
+      # Ref: https://www.terraform.io/docs/language/functions/defaults.html
+
+      # origin_path = optional(string)
+      # custom_headers = optional(
+      #   list(
+      #     object({
+      #       name  = string
+      #       value = string
+      #     })
+      #   )
+      # )
+
+      # custom_origin_config = optional(
+      #   object({
+      #     http_port                = number
+      #     https_port               = number
+      #     origin_protocol_policy   = string
+      #     origin_ssl_protocols     = list(string)
+      #     origin_keepalive_timeout = number
+      #     origin_read_timeout      = number
+      #   })
+      # )
+    })
+  )
+
+  default = []
+}
+
 # Restriction variables
 variable "geo_restriction_type" {
   description = "The type of geographic restriction to apply"
   type        = string
   default     = "none"
+}
+
+variable "geo_restriction_locations" {
+  description = <<EOF
+  List of country codes to take action based on the restriction type (e.g.
+  whitelisting or backlisting).
+EOF
+
+  type = list(string)
+
+  # e.g. ["US", "CA", "GB", "DE"]
+  default = []
 }
 
 # Viewer certificate variables
