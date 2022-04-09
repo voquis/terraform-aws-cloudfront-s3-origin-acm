@@ -11,7 +11,7 @@ To make changes to a distribution once deployed, update the origin path.
 For example, a version 1.0 project could be placed in a `/v1.0` directory, and the next version of the project placed in `/v1.1`.
 Updating the `origin_path` from `/v1.0` to `/v1.1` would invalidate the cache and redeploy the new distribution.
 
-# Exmaples
+# Examples
 ```terraform
 # Default provider
 provider "aws" {
