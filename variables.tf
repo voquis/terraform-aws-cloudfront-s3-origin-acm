@@ -136,6 +136,15 @@ variable "forwarded_values_cookies" {
   default     = "none"
 }
 
+variable "function_association" {
+  description = "Optional Cloudfront Function association for request/response events"
+  type = object({
+    event_type   = string
+    function_arn = string
+  })
+  default = null
+}
+
 # Origin variables
 variable "origin_path" {
   description = "The parent path within the S3 bucket from which to serve content.  Do not use /, this is implied.  Useful for updating the distribution with a new version by using directories for versioning instead of invalidation requests"

@@ -7,6 +7,8 @@ See the [ACM with DNS validation module](https://registry.terraform.io/modules/v
 This module assumes the entire S3 bucket will be used for serving content, see the [S3 encrypted module](https://registry.terraform.io/modules/voquis/s3-encrypted/aws/) for creating a bucket.
 This module is useful for creating single page apps (SPAs) in JavaScript where all routes are forwarded to a single page. In this case, both the `default_root_object` and the 404 `custom_error_response_page_path` will refer to `index.html` for example.
 
+For pages created with a static site generator, the optional `function_association` object variable may be provided, to associate a Cloudfront Function with the default cache, e.g. to append `/index.html` to all requests.
+
 To make changes to a distribution once deployed, update the origin path.
 For example, a version 1.0 project could be placed in a `/v1.0` directory, and the next version of the project placed in `/v1.1`.
 Updating the `origin_path` from `/v1.0` to `/v1.1` would invalidate the cache and redeploy the new distribution.
@@ -38,7 +40,7 @@ resource "aws_route53_zone" "this" {
   force_destroy = false
 }
 
-# Create
+# Create certificate
 module "acm" {
   source      = "voquis/acm-dns-validation/aws"
   version     = "0.0.2"

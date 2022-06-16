@@ -86,6 +86,15 @@ resource "aws_cloudfront_distribution" "this" {
       }
     }
   }
+
+  dynamic "function_association" {
+    for_each = var.function_association == null ? [] : [var.function_association]
+    content {
+      event_type   = function_association.value["event_type"]
+      function_arn = function_association.value["function_arn"]
+    }
+  }
+
   # S3 origin definition
   origin {
     domain_name = var.bucket_regional_domain_name
