@@ -13,7 +13,10 @@ To make changes to a distribution once deployed, update the origin path.
 For example, a version 1.0 project could be placed in a `/v1.0` directory, and the next version of the project placed in `/v1.1`.
 Updating the `origin_path` from `/v1.0` to `/v1.1` would invalidate the cache and redeploy the new distribution.
 
+To avoid using an ACM certificate and use the default cloudfront certificate, set `cloudfront_default_certificate` to `true` and do not provide `alias` or `acm_certificate_arn`.
+
 # Examples
+## Cloudfront distribution with custom ACM certificates
 ```terraform
 # Default provider
 provider "aws" {
@@ -23,14 +26,14 @@ provider "aws" {
 
 # Aliased provider in US East 1, needed for ACM certificate
 provider "aws" {
-  alias   = "useast1"
-  region   = "us-east-1"
+  alias  = "useast1"
+  region = "us-east-1"
 }
 
 # Create S3 bucket
 module "s3" {
   source  = "voquis/s3-encrypted/aws"
-  version = "0.0.2"
+  version = "0.0.4"
   bucket  = "my-super-unique-bucket-name"
 }
 
@@ -42,9 +45,9 @@ resource "aws_route53_zone" "this" {
 
 # Create certificate
 module "acm" {
-  source      = "voquis/acm-dns-validation/aws"
-  version     = "0.0.2"
-  providers   = {
+  source  = "voquis/acm-dns-validation/aws"
+  version = "0.0.4"
+  providers = {
     aws = aws.useast1
   }
   zone_id     = aws_route53_zone.this.id
@@ -54,7 +57,7 @@ module "acm" {
 # Main cloudfront distribution with S3 origin
 module "cloudfront" {
   source                      = "voquis/cloudfront-s3-origin-acm/aws"
-  version                     = "0.0.3"
+  version                     = "0.0.5"
   bucket_id                   = module.s3.s3_bucket.id
   bucket_arn                  = module.s3.s3_bucket.arn
   bucket_regional_domain_name = module.s3.s3_bucket.bucket_regional_domain_name
@@ -65,14 +68,40 @@ module "cloudfront" {
 
 # Route 53 record for cloudfront alias
 resource "aws_route53_record" "my" {
-  name      = "my"
-  type      = "A"
-  zone_id   = aws_route53_zone.this.zone_id
+  name    = "my"
+  type    = "A"
+  zone_id = aws_route53_zone.this.zone_id
   alias {
-    name    = module.cloudfront.cloudfront_distribution.domain_name
-    zone_id = module.cloudfront.cloudfront_distribution.hosted_zone_id
+    name                   = module.cloudfront.cloudfront_distribution.domain_name
+    zone_id                = module.cloudfront.cloudfront_distribution.hosted_zone_id
     evaluate_target_health = false
   }
 }
 
+```
+## Cloudfront distribution with default viewer certificates
+```terraform
+# Default provider
+provider "aws" {
+  version = "3.4.0"
+  region  = "eu-west-2"
+}
+
+# Create S3 bucket
+module "s3" {
+  source  = "voquis/s3-encrypted/aws"
+  version = "0.0.4"
+  bucket  = "my-super-unique-bucket-name"
+}
+
+# Main cloudfront distribution with S3 origin with optional ACM certification and optional alias
+module "cloudfront" {
+  source                         = "voquis/cloudfront-s3-origin-acm/aws"
+  version                        = "0.0.5"
+  bucket_id                      = module.s3.s3_bucket.id
+  bucket_arn                     = module.s3.s3_bucket.arn
+  bucket_regional_domain_name    = module.s3.s3_bucket.bucket_regional_domain_name
+  origin_path                    = "/examplefolder"
+  cloudfront_default_certificate = true
+}
 ```
