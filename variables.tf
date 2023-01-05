@@ -17,15 +17,6 @@ variable "bucket_regional_domain_name" {
   type        = string
 }
 
-variable "aliases" {
-  description = "List of CNAMEs to use as aliases for the Cloudfront domain name"
-  type        = list(string)
-}
-
-variable "acm_certificate_arn" {
-  description = "ACM Certificate ARN, note certificate must be in US East 1"
-  type        = string
-}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Optional variables
@@ -38,6 +29,12 @@ variable "origin_access_identity_comment" {
 }
 
 # Main cloudfront settings
+variable "aliases" {
+  description = "List of CNAMEs to use as aliases for the Cloudfront domain name"
+  type        = list(string)
+  default     = null
+}
+
 variable "default_root_object" {
   description = "The file to serve when no path is specified"
   type        = string
@@ -160,6 +157,18 @@ variable "geo_restriction_type" {
 }
 
 # Viewer certificate variables
+variable "acm_certificate_arn" {
+  description = "ACM Certificate ARN, note certificate must be in US East 1"
+  type        = string
+  default     = null
+}
+
+variable "cloudfront_default_certificate" {
+  description = "Whether to use a cloudfront issued certificate instead of custom acm certificate"
+  type        = string
+  default     = false
+}
+
 variable "minimum_protocol_version" {
   description = "The Minimum TLS version to support"
   type        = string
@@ -167,7 +176,7 @@ variable "minimum_protocol_version" {
 }
 
 variable "ssl_support_method" {
-  description = "The SSL metho to support"
+  description = "The SSL method to support"
   type        = string
   default     = "sni-only"
 }
